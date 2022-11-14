@@ -50,9 +50,9 @@ constructor(private userService: UsersService,
     }
 
     async registration(userDto: CreateUserDto) {
-            const candidate = await this.userService.getUserByEmail(userDto.email);
+            const registeredUser = await this.userService.getUserByEmail(userDto.email);
 
-            if (candidate) {
+            if (registeredUser) {
                 throw new HttpException('Email is already used', HttpStatus.BAD_REQUEST);
             }
 
