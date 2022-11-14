@@ -1,5 +1,6 @@
 import { Injectable, HttpException, HttpStatus, UnauthorizedException} from '@nestjs/common';
 import { CreateUserDto } from "../users/dto/create-user.dto";
+import { AuthUserDto } from "./dto/auth-user.dto"
 import { UsersService } from "../users/users.service";
 import { User } from "../users/users.model";
 import * as bcrypt from 'bcryptjs'
@@ -16,7 +17,7 @@ constructor(private userService: UsersService,
         return user;
       }
 
-    async login(userDto: CreateUserDto) {
+    async login(userDto: AuthUserDto) {
         if(!userDto.email || !userDto.password) {
             throw new HttpException('Invalid username or password', HttpStatus.UNAUTHORIZED)
         }
@@ -25,7 +26,7 @@ constructor(private userService: UsersService,
         return this.generateToken(user)      
     }
 
-    private async validateUser(userDto: CreateUserDto) {
+    private async validateUser(userDto: AuthUserDto) {
         const user = await this.getUserByEmail(userDto.email);  
         
         if (!user) { 
@@ -49,15 +50,16 @@ constructor(private userService: UsersService,
     }
 
     async registration(userDto: CreateUserDto) {
-                const candidate = await this.userService.getUserByEmail(userDto.email);
+            const candidate = await this.userService.getUserByEmail(userDto.email);
 
-                if (candidate) {
-                    throw new HttpException('Email is already used', HttpStatus.BAD_REQUEST);
-                }
+            if (candidate) {
+                throw new HttpException('Email is already used', HttpStatus.BAD_REQUEST);
+            }
 
-                const hashPassword = await bcrypt.hash(userDto.password, 10);
-                const user = await this.userService.createUser({...userDto, password: hashPassword})
-                return this.generateToken(user)
+            const hashPassword = await bcrypt.hash(userDto.password, 10);
+            const user = await this.userService.createUser({...userDto, password: hashPassword})
+            
+            return this.generateToken(user)
     }
 
 }

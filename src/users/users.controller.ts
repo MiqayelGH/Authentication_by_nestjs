@@ -1,4 +1,4 @@
-import { Controller, Get} from '@nestjs/common';
+import { Controller, Get, Param} from '@nestjs/common';
 import {UsersService} from "./users.service";
 import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 import {User} from "./users.model";
@@ -15,4 +15,11 @@ export class UsersController {
         return this.usersService.getAllUsers();
     }
 
+    
+    @ApiOperation({summary: 'Get user by id'})
+    @ApiResponse({status: 200, type: [User]})
+    @Get(':id')
+    getUser(@Param('id') id: string) {
+        return this.usersService.getUserById(id);
+    }
 }
